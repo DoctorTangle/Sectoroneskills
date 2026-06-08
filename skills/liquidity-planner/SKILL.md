@@ -1,6 +1,6 @@
 ---
 name: liquidity-planner
-description: This skill should be used when the user asks to "provide liquidity SectorOne", "add liquidity DLMM", "LP on Joe Base", "liquidity on SectorOne", "DLMM bins", "bin step", "concentrated liquidity SectorOne", "remove liquidity SectorOne", "withdraw LP SectorOne", or mentions liquidity pools, LP positions, bins, or being a liquidity provider on SectorOne / Joe / Liquidity Book on Base mainnet. Plans DLMM liquidity context and directs the user to the SectorOne app. Does NOT require npm install. For unsigned add/remove calldata or Base MCP send_calls, use dlmm-integration instead.
+description: This skill should be used when the user asks to "provide liquidity SectorOne", "add liquidity DLMM", "LP on Joe Base", "liquidity on SectorOne", "DLMM bins", "bin step", "concentrated liquidity SectorOne", "remove liquidity SectorOne", "withdraw LP SectorOne", or mentions liquidity pools, LP positions, bins, or being a liquidity provider on SectorOne / Joe / Liquidity Book on Base mainnet. Plans DLMM liquidity context and generates app.sectorone.xyz add-LP deep links. Does NOT require npm install. For unsigned add/remove calldata or Base MCP send_calls, use dlmm-integration instead.
 allowed-tools: Read, Glob, Grep, Bash(curl:*), Bash(jq:*), WebFetch, WebSearch, AskUserQuestion
 license: MIT
 metadata:

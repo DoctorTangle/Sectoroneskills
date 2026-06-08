@@ -1,6 +1,6 @@
 ---
 name: swap-planner
-description: This skill should be used when the user asks to "swap on SectorOne", "trade on Joe DLMM", "swap on LB Base", "exchange tokens SectorOne", "buy on SectorOne", "sell on SectorOne", "SectorOne quote", "trade USDC for WETH on Base DLMM", "Joe swap Base", or mentions swapping, trading, buying, or selling on SectorOne / Joe / Liquidity Book on Base mainnet. Plans the trade, verifies tokens on-chain, uses SectorOne docs for protocol context, and directs the user to the SectorOne app. Does NOT require npm install or the SectorOne SDK. For exact quotes, unsigned calldata, or Base MCP send_calls, use dlmm-integration instead.
+description: This skill should be used when the user asks to "swap on SectorOne", "trade on Joe DLMM", "swap on LB Base", "exchange tokens SectorOne", "buy on SectorOne", "sell on SectorOne", "SectorOne quote", "trade USDC for WETH on Base DLMM", "Joe swap Base", or mentions swapping, trading, buying, or selling on SectorOne / Joe / Liquidity Book on Base mainnet. Plans the trade, verifies tokens on-chain, generates app.sectorone.xyz swap deep links, and uses SectorOne docs for protocol context. Does NOT require npm install or the SectorOne SDK. For exact quotes, unsigned calldata, or Base MCP send_calls, use dlmm-integration instead.
 allowed-tools: Read, Glob, Grep, Bash(curl:*), Bash(jq:*), WebFetch, WebSearch, AskUserQuestion
 license: MIT
 metadata:
