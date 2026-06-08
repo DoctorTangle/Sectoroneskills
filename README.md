@@ -19,6 +19,14 @@ npx skills add DoctorTangle/Sectoroneskills --skill swap-planner
 npx skills add DoctorTangle/Sectoroneskills --skill liquidity-planner
 ```
 
+### Bankr wallet execute (pool / deposit / withdraw)
+
+Requires [dlmmskills](https://github.com/DoctorTangle/dlmmskills) CLI + `BANKR_API_KEY` (write):
+
+```bash
+npx skills add DoctorTangle/Sectoroneskills --skill sectorone-bankr-execute
+```
+
 ### Full calldata (Base MCP `send_calls`)
 
 Requires cloning and building the CLI from [dlmmskills](https://github.com/DoctorTangle/dlmmskills):
@@ -43,6 +51,7 @@ Then clone [dlmmskills](https://github.com/DoctorTangle/dlmmskills) for quotes a
 | --- | --- | --- |
 | Swap on SectorOne (human executes in app) | `swap-planner` | No |
 | Add/remove LP (plan + app) | `liquidity-planner` | No |
+| Create pool / LP deposit / withdraw (Bankr wallet) | `sectorone-bankr-execute` | CLI + API key |
 | Base MCP `send_calls`, exact SDK quote | `dlmm-integration` | Yes |
 | Cursor / Claude Code all-in-one | `sectorone-dlmm` | Yes |
 

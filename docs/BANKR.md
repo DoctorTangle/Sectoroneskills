@@ -5,9 +5,12 @@ Bankr bots ([skills.bankr.bot](https://skills.bankr.bot)) work well with Uniswap
 ## Install skills (Skills CLI)
 
 ```bash
-# Bankr-safe — no SDK, no npm install
+# Bankr-safe — plan + app deep links
 npx skills add DoctorTangle/Sectoroneskills --skill swap-planner
 npx skills add DoctorTangle/Sectoroneskills --skill liquidity-planner
+
+# Bankr wallet execute — pool create / LP deposit / withdraw (CLI + BANKR_API_KEY)
+npx skills add DoctorTangle/Sectoroneskills --skill sectorone-bankr-execute
 
 # Full calldata (needs git + npm install in dlmmskills repo)
 npx skills add DoctorTangle/Sectoroneskills --skill dlmm-integration
@@ -24,7 +27,8 @@ npx skills add DoctorTangle/Sectoroneskills --list
 | User goal | Skill | Needs CLI? |
 | --- | --- | --- |
 | "Swap on SectorOne" (human executes in app) | `swap-planner` | No |
-| "Add/remove LP" (plan + app) | `liquidity-planner` | No |
+| "Add/remove LP" (plan + app deep link) | `liquidity-planner` | No |
+| **Create pool / deposit / withdraw with Bankr wallet** | `sectorone-bankr-execute` | Yes + `BANKR_API_KEY` |
 | Base MCP `send_calls`, exact SDK quote | `dlmm-integration` | Yes |
 | Cursor / Claude Code all-in-one | `sectorone-dlmm` | Yes |
 
@@ -40,12 +44,9 @@ npx skills add DoctorTangle/Sectoroneskills --list
 
 ```text
 packages/plugins/
-  sectorone-driver/     # Bankr-safe planners
-    skills/swap-planner/
-    skills/liquidity-planner/
-  sectorone-trading/      # CLI + Base MCP
-    skills/dlmm-integration/
-    scripts/check-cli.sh
+  sectorone-driver/          # Bankr-safe planners + deep links
+  sectorone-bankr-execute/   # Pool create / LP deposit / withdraw via Bankr submit
+  sectorone-trading/         # CLI + Base MCP (dlmm-integration)
 ```
 
 Legacy umbrella: `skills/sectorone-dlmm/` (Cursor + Base MCP all-in-one onboarding).

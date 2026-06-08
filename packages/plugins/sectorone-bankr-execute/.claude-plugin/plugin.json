@@ -1,0 +1,13 @@
+{
+  "name": "sectorone-bankr-execute",
+  "version": "0.1.0",
+  "description": "Execute SectorOne DLMM pool create, add liquidity, and remove liquidity on Base via Bankr wallet submit + dlmmskills CLI calldata.",
+  "author": {
+    "name": "DoctorTangle",
+    "email": "DoctorTangle@users.noreply.github.com"
+  },
+  "homepage": "https://github.com/DoctorTangle/Sectoroneskills",
+  "keywords": ["sectorone", "dlmm", "base", "bankr", "liquidity", "execute", "submit"],
+  "license": "MIT",
+  "skills": ["./skills/sectorone-bankr-execute"]
+}

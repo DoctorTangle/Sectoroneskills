@@ -1,6 +1,6 @@
 ---
 name: liquidity-planner
-description: This skill should be used when the user asks to "provide liquidity SectorOne", "add liquidity DLMM", "LP on Joe Base", "liquidity on SectorOne", "DLMM bins", "bin step", "concentrated liquidity SectorOne", "remove liquidity SectorOne", "withdraw LP SectorOne", or mentions liquidity pools, LP positions, bins, or being a liquidity provider on SectorOne / Joe / Liquidity Book on Base mainnet. Plans DLMM liquidity context and generates app.sectorone.xyz add/remove LP deep links. Does NOT require npm install. For unsigned add/remove calldata or Base MCP send_calls, use dlmm-integration instead.
+description: This skill should be used when the user asks to "provide liquidity SectorOne", "add liquidity DLMM", "LP on Joe Base", "liquidity on SectorOne", "DLMM bins", "bin step", "concentrated liquidity SectorOne", "remove liquidity SectorOne", "withdraw LP SectorOne", or mentions liquidity pools, LP positions, bins, or being a liquidity provider on SectorOne / Joe / Liquidity Book on Base mainnet. Plans DLMM liquidity context and generates app.sectorone.xyz add/remove LP deep links. Does NOT require npm install. For unsigned add/remove calldata, Bankr wallet execute (`sectorone-bankr-execute`), or Base MCP, see those skills.
 allowed-tools: Read, Glob, Grep, Bash(curl:*), Bash(jq:*), WebFetch, WebSearch, AskUserQuestion
 license: MIT
 metadata:
@@ -15,7 +15,9 @@ Plan DLMM **liquidity positions** on **Base mainnet only**. For Bankr bots that 
 
 > **Runtime compatibility:** Uses `AskUserQuestion` when available; otherwise ask in natural language.
 
-> **Escalate to `dlmm-integration`** for `build-add-liquidity`, `build-remove-liquidity`, `read-position`, or Base MCP `send_calls`.
+> **Escalate to `sectorone-bankr-execute`** when the user wants to **create a pool**, **deposit**, or **withdraw** LP using **Bankr wallet funds** (needs CLI + `BANKR_API_KEY`).
+
+> **Escalate to `dlmm-integration`** for Base MCP `send_calls` without Bankr submit.
 
 ## Overview
 
@@ -246,7 +248,7 @@ Only if user asks about TVL, volume, or which pool to pick. See [references/data
 ### Execute
 **Open SectorOne:** https://app.sectorone.xyz/liquidity/manual/:8453/remove/v20/0xa278be41d539f49bf52dbc919ae1572963cb55d9/10
 
-For programmatic remove calldata, use `dlmm-integration` (`read-position` → `build-remove-liquidity`).
+For programmatic remove calldata, use **`sectorone-bankr-execute`** (Bankr wallet) or **`dlmm-integration`** (Base MCP).
 ```
 
 ## Important considerations

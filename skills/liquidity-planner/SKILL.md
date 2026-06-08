@@ -15,7 +15,7 @@ Plan DLMM **liquidity positions** on **Base mainnet only**. For Bankr bots that 
 
 > **Runtime compatibility:** Uses `AskUserQuestion` when available; otherwise ask in natural language.
 
-> **Escalate to `dlmm-integration`** for `build-add-liquidity`, `build-remove-liquidity`, `read-position`, or Base MCP `send_calls`.
+> Escalate to **`sectorone-bankr-execute`** (Bankr wallet + CLI) or **`dlmm-integration`** (Base MCP).
 
 ## Overview
 
