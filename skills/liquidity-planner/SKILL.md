@@ -1,24 +1,104 @@
 ---
 name: liquidity-planner
-description: Use when the user asks to add or remove liquidity on SectorOne DLMM on Base — "provide liquidity SectorOne", "LP on Joe Base", "DLMM bins", "remove liquidity SectorOne". Opens the SectorOne app; no npm install. For calldata use dlmm-integration.
-allowed-tools: Read, Glob, Grep, Bash(curl:*), Bash(jq:*), WebFetch, WebSearch
+description: This skill should be used when the user asks to "provide liquidity SectorOne", "add liquidity DLMM", "LP on Joe Base", "liquidity on SectorOne", "DLMM bins", "bin step", "concentrated liquidity SectorOne", "remove liquidity SectorOne", "withdraw LP SectorOne", or mentions liquidity pools, LP positions, bins, or being a liquidity provider on SectorOne / Joe / Liquidity Book on Base mainnet. Plans DLMM liquidity context and directs the user to the SectorOne app. Does NOT require npm install. For unsigned add/remove calldata or Base MCP send_calls, use dlmm-integration instead.
+allowed-tools: Read, Glob, Grep, Bash(curl:*), Bash(jq:*), WebFetch, WebSearch, AskUserQuestion
 license: MIT
 metadata:
   author: Sectoroneskills
-  version: "0.1.0"
+  version: "0.2.0"
   plugin: sectorone-driver
 ---
 
 # SectorOne Liquidity Planner (Bankr-safe)
 
-Plan DLMM liquidity on Base without the SDK.
+Plan DLMM **liquidity positions** on **Base mainnet only**. For Bankr bots that cannot run the SectorOne SDK or CLI.
 
-1. Confirm pair + **bin step** (liquidity is bin-local).
-2. Query docs: `GET https://docs.sectorone.xyz/sectorone/welcome.md?ask=...`
-3. Direct user to https://linktr.ee/SectorOneDEX
+> **Runtime compatibility:** Uses `AskUserQuestion` when available; otherwise ask in natural language.
 
-**Remove LP:** needs bin IDs — full CLI: `read-position` + `build-remove-liquidity` (see `dlmm-integration`).
+> **Escalate to `dlmm-integration`** for `build-add-liquidity`, `build-remove-liquidity`, `read-position`, or Base MCP `send_calls`.
 
-Base addresses: [../swap-planner/references/chains.md](../swap-planner/references/chains.md)
+## Overview
 
-See [docs/BANKR.md](../../docs/BANKR.md).
+SectorOne LP is **bin-based** (DLMM), not Uniswap tick-based. This skill:
+
+1. Gathers pair, amounts, and user goals
+2. Explains **bin step**, **bin range**, and **LB version** (v2 default)
+3. Queries SectorOne docs for protocol specifics
+4. Presents a structured plan + app link — user executes in UI
+
+**No private keys. No pre-filled LP deep links.**
+
+## Workflow
+
+### Step 1 — Gather LP intent
+
+| Parameter | Required | Default | Example |
+| --- | --- | --- | --- |
+| Token A | Yes | — | WETH, USDC |
+| Token B | Yes | — | USDC |
+| Deposit amount | Yes | — | 1 ETH + USDC |
+| Action | Yes | Add | Add / Remove |
+| LB version | No | v2 | v2, v22 |
+
+**Reject non-Base chains.** Use AskUserQuestion for missing action/pair (see plugin copy for JSON examples).
+
+### Step 2 — Resolve and verify tokens
+
+See [references/chains.md](../swap-planner/references/chains.md). Same web-discovered token warnings as swap-planner.
+
+### Step 3 — Explain DLMM concepts
+
+See [references/dlmm-bins.md](../swap-planner/references/dlmm-bins.md):
+
+```bash
+curl -sG "https://docs.sectorone.xyz/sectorone/welcome.md" \
+  --data-urlencode "ask=How do DLMM bins and bin step work when adding liquidity on Base?"
+```
+
+### Step 4 — Suggest bin range (conceptual)
+
+Offer narrow / medium / wide framing — exact bin IDs come from the app or CLI.
+
+| Pair type | Suggested framing |
+| --- | --- |
+| Stable / correlated | Narrower bins |
+| WETH / USDC | Medium width |
+| Volatile | Wider bins; warn on IL |
+
+### Step 5 — Add vs remove
+
+- **Add:** app flow — pair → pool (bin step) → range → deposit → confirm
+- **Remove:** app positions UI; calldata path → `dlmm-integration` + `read-position` / `build-remove-liquidity`
+
+### Step 6 — Optional pool hints
+
+Only if user asks. See [references/data-providers.md](../swap-planner/references/data-providers.md).
+
+### Step 7 — Present LP plan
+
+```markdown
+## SectorOne Liquidity Plan (Base)
+
+| Field | Value |
+| --- | --- |
+| Action | Add liquidity |
+| Pair | WETH / USDC |
+| Chain | Base (8453) |
+| LB version | v2 (Joe 2.0) |
+| Bin step | Pick deepest pool in app |
+| Range | Medium around current price |
+
+### Considerations
+- IL if price leaves your bins
+- No LP deep link — configure manually in app
+
+### Execute
+**Open SectorOne:** https://linktr.ee/SectorOneDEX
+```
+
+## Additional resources
+
+- [references/chains.md](../swap-planner/references/chains.md)
+- [references/dlmm-bins.md](../swap-planner/references/dlmm-bins.md)
+- [references/data-providers.md](../swap-planner/references/data-providers.md)
+- [docs/BANKR.md](../../docs/BANKR.md)

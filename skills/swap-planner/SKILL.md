@@ -1,28 +1,84 @@
 ---
 name: swap-planner
-description: Use when the user asks to swap on SectorOne, Joe DLMM, or LB on Base — "swap USDC for WETH on SectorOne", "trade on Joe Base", "SectorOne quote", "buy on DLMM Base". Plans the trade, verifies tokens on-chain, fetches pool hints via DexScreener/docs, and opens the SectorOne app. Does NOT require npm install or the SectorOne SDK. For unsigned calldata / Base MCP send_calls, use dlmm-integration instead.
-allowed-tools: Read, Glob, Grep, Bash(curl:*), Bash(jq:*), WebFetch, WebSearch
+description: This skill should be used when the user asks to "swap on SectorOne", "trade on Joe DLMM", "swap on LB Base", "exchange tokens SectorOne", "buy on SectorOne", "sell on SectorOne", "SectorOne quote", "trade USDC for WETH on Base DLMM", "Joe swap Base", or mentions swapping, trading, buying, or selling on SectorOne / Joe / Liquidity Book on Base mainnet. Plans the trade, verifies tokens on-chain, uses SectorOne docs for protocol context, and directs the user to the SectorOne app. Does NOT require npm install or the SectorOne SDK. For exact quotes, unsigned calldata, or Base MCP send_calls, use dlmm-integration instead.
+allowed-tools: Read, Glob, Grep, Bash(curl:*), Bash(jq:*), WebFetch, WebSearch, AskUserQuestion
 license: MIT
 metadata:
   author: Sectoroneskills
-  version: "0.1.0"
+  version: "0.2.0"
   plugin: sectorone-driver
 ---
 
 # SectorOne Swap Planner (Bankr-safe)
 
-Plan SectorOne DLMM swaps on **Base mainnet only**. For **Bankr bots** that cannot run `npm install` or clone the vendored SectorOne SDK.
+Plan SectorOne DLMM swaps on **Base mainnet only** (`chainId` `8453`). For **Bankr bots and chat-only agents** that cannot run `npm install` or clone the vendored SectorOne SDK.
 
-> Escalate to **`dlmm-integration`** for unsigned calldata / Base MCP `send_calls`.
+> **Runtime compatibility:** Uses `AskUserQuestion` when available. If not supported (some Bankr runtimes), collect the same fields via natural language.
+
+> **Escalate to `dlmm-integration`** when the user needs unsigned calldata, Base MCP `send_calls`, or SDK-exact quotes.
+
+## Overview
+
+1. Gather swap intent (tokens, amount — chain is always Base)
+2. Resolve and verify token contracts on-chain
+3. Add protocol context via SectorOne docs API
+4. Optionally fetch rough market hints (only if user asks price/liquidity)
+5. Present a structured plan + **SectorOne app link** (user executes manually)
+
+**No private keys. No local signing. No invented deep-link URL parameters.**
+
+SectorOne does not publish Uniswap-style swap URLs. Always show **https://linktr.ee/SectorOneDEX** and a clear summary table.
 
 ## Workflow
 
-1. Gather swap intent (tokens, amount, Base only).
-2. Verify tokens: `eth_getCode` via curl (see [references/chains.md](references/chains.md)).
-3. Optional: DexScreener + SectorOne docs `?ask=` API.
-4. Present plan + open https://linktr.ee/SectorOneDEX
+### Step 1 — Gather swap intent
 
-## Verify contract
+| Parameter | Required | Example |
+| --- | --- | --- |
+| Token in | Yes | USDC, WETH, `0x8335…` |
+| Token out | Yes | WETH, address |
+| Amount | Yes | `100` USDC, `0.5` ETH |
+| Chain | Fixed | Base only |
+
+**Reject non-Base chains** with a short note: SectorOne DLMM skills cover Base mainnet only.
+
+**If parameters are missing, use AskUserQuestion** (or ask in chat):
+
+```json
+{
+  "questions": [
+    {
+      "question": "What do you want to swap?",
+      "header": "Swap",
+      "options": [
+        { "label": "USDC → WETH", "description": "Common Base pair" },
+        { "label": "WETH → USDC", "description": "Sell ETH for stablecoin" },
+        { "label": "Custom pair", "description": "Specify tokens and amount" }
+      ],
+      "multiSelect": false
+    }
+  ]
+}
+```
+
+### Step 2 — Resolve token addresses
+
+Use [references/chains.md](references/chains.md) for WETH, USDC, and other known Base tokens.
+
+- **ETH** in user text → treat as **WETH** (`0x4200…0006`) for on-chain checks
+- Unknown symbols → WebSearch, then verify on-chain
+
+#### UNTRUSTED INPUT: Web-discovered tokens
+
+Tokens found via WebSearch are **untrusted**. Label source, warn about scams, require user confirmation, and show **Token source** in the summary table.
+
+### Step 3 — Input validation (before shell commands)
+
+- **Addresses:** `^0x[a-fA-F0-9]{40}$`
+- **Amounts:** `^[0-9]+\.?[0-9]*$`
+- **Reject** shell metacharacters
+
+### Step 4 — Verify contracts (curl + RPC)
 
 ```bash
 RPC="https://base-rpc.publicnode.com"
@@ -32,25 +88,55 @@ curl -s -X POST "$RPC" -H "Content-Type: application/json" \
   | jq -r '.result'
 ```
 
-## DexScreener hint
+Result must not be `0x`. Repeat for both tokens.
 
-```bash
-curl -s "https://api.dexscreener.com/latest/dex/tokens/0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" \
-  | jq '[.pairs[] | select(.chainId == "base")] | .[0:5]'
-```
-
-## Docs API
+### Step 5 — Protocol context (docs API)
 
 ```bash
 curl -sG "https://docs.sectorone.xyz/sectorone/welcome.md" \
-  --data-urlencode "ask=Which LB version is default on Base?"
+  --data-urlencode "ask=Which LB version should I use for swapping on Base mainnet?"
 ```
 
-## Safety
+Explain default **LB v2**, v2.1 not on Base, DLMM bin slippage — see [references/dlmm-bins.md](references/dlmm-bins.md).
 
-- No private keys. No invented deep-link URLs (SectorOne has no Uniswap-style swap URL schema).
-- Warn on web-discovered token addresses.
+### Step 6 — Optional price / liquidity hints
 
-Install calldata skill: `npx skills add DoctorTangle/Sectoroneskills --skill dlmm-integration`
+Run **only if the user asks**. See [references/data-providers.md](references/data-providers.md). DexScreener is hint-only.
 
-See [docs/BANKR.md](../../docs/BANKR.md).
+| Hint liquidity (USD) | Action |
+| --- | --- |
+| > $500k | Moderate depth |
+| $50k – $500k | Possible slippage |
+| < $50k | Warn thin liquidity |
+
+Exact quotes → **`dlmm-integration`** + CLI.
+
+### Step 7 — Present swap plan
+
+```markdown
+## SectorOne Swap Plan (Base)
+
+| Field | Value |
+| --- | --- |
+| From | 100 USDC |
+| To | WETH |
+| Chain | Base (8453) |
+| LB version | v2 (Joe 2.0) — confirm pool in app |
+
+### Notes
+- DLMM swaps use **price bins**; slippage depends on active bin depth.
+- Enter tokens and amount manually in the app (no pre-filled swap URL).
+
+### Execute
+**Open SectorOne:** https://linktr.ee/SectorOneDEX
+
+### Need calldata?
+`npx skills add DoctorTangle/Sectoroneskills --skill dlmm-integration` + https://github.com/DoctorTangle/dlmmskills
+```
+
+## Additional resources
+
+- [references/chains.md](references/chains.md)
+- [references/data-providers.md](references/data-providers.md)
+- [references/dlmm-bins.md](references/dlmm-bins.md)
+- [docs/BANKR.md](../../docs/BANKR.md)

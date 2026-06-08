@@ -58,6 +58,8 @@ packages/plugins/
 
 Legacy layouts: `skills/base-mcp/` (deprecated), `skills/sectorone-dlmm/` (canonical umbrella).
 
+Driver reference docs (`chains`, `dlmm-bins`, `data-providers`): `packages/plugins/sectorone-driver/references/`
+
 ## Base MCP upstream
 
 Thin plugin for a future [base/skills](https://github.com/base/skills) PR: [contrib/base-skills/](contrib/base-skills/).
