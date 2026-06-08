@@ -48,13 +48,9 @@ curl -sG "https://docs.sectorone.xyz/sectorone/welcome.md" \
 
 ## Remove liquidity
 
-| Surface | Capability |
-| --- | --- |
-| SectorOne app | User selects position and removes in UI |
-| Bankr driver skill | Plan + link to app only |
-| `dlmm-integration` + CLI | `read-position` → `build-remove-liquidity` with `--bin-ids` |
+Deep link: `…/liquidity/manual/:8453/remove/v20/{pair}/{binStep}` — see [deep-links.md](deep-links.md).
 
-Always escalate remove-LP calldata requests to **`dlmm-integration`**.
+Calldata path: `dlmm-integration` + `read-position` → `build-remove-liquidity`.
 
 ## DLMM vs Uniswap LP (user messaging)
 

@@ -1,11 +1,11 @@
 ---
 name: liquidity-planner
-description: This skill should be used when the user asks to "provide liquidity SectorOne", "add liquidity DLMM", "LP on Joe Base", "liquidity on SectorOne", "DLMM bins", "bin step", "concentrated liquidity SectorOne", "remove liquidity SectorOne", "withdraw LP SectorOne", or mentions liquidity pools, LP positions, bins, or being a liquidity provider on SectorOne / Joe / Liquidity Book on Base mainnet. Plans DLMM liquidity context and generates app.sectorone.xyz add-LP deep links. Does NOT require npm install. For unsigned add/remove calldata or Base MCP send_calls, use dlmm-integration instead.
+description: This skill should be used when the user asks to "provide liquidity SectorOne", "add liquidity DLMM", "LP on Joe Base", "liquidity on SectorOne", "DLMM bins", "bin step", "concentrated liquidity SectorOne", "remove liquidity SectorOne", "withdraw LP SectorOne", or mentions liquidity pools, LP positions, bins, or being a liquidity provider on SectorOne / Joe / Liquidity Book on Base mainnet. Plans DLMM liquidity context and generates app.sectorone.xyz add/remove LP deep links. Does NOT require npm install. For unsigned add/remove calldata or Base MCP send_calls, use dlmm-integration instead.
 allowed-tools: Read, Glob, Grep, Bash(curl:*), Bash(jq:*), WebFetch, WebSearch, AskUserQuestion
 license: MIT
 metadata:
   author: Sectoroneskills
-  version: "0.2.1"
+  version: "0.2.2"
   plugin: sectorone-driver
 ---
 
@@ -149,11 +149,23 @@ User flow in app:
 
 | User need | This skill | Escalation |
 | --- | --- | --- |
-| "Withdraw my LP" (manual) | Explain bins + app link | — |
+| Withdraw LP in app | Generate **remove deep link** (same pair/bin step as add) | — |
 | Unsigned remove tx / Base MCP | Cannot | `dlmm-integration` |
 | "Which bins am I in?" | Cannot | CLI `read-position` |
 
-For remove requests, always mention: removing requires **bin IDs** from the position — visible in app or via CLI.
+**Remove deep link** (when pair + bin step known):
+
+```text
+https://app.sectorone.xyz/liquidity/manual/:8453/remove/v20/{lbPairAddress}/{binStep}
+```
+
+**Example:**
+
+```text
+https://app.sectorone.xyz/liquidity/manual/:8453/remove/v20/0xa278be41d539f49bf52dbc919ae1572963cb55d9/10
+```
+
+User still picks bins / withdrawal amount in the app. For programmatic remove, use `read-position` → `build-remove-liquidity`.
 
 ### Step 6 — Resolve pair address + bin step (for deep link)
 
@@ -222,12 +234,17 @@ Only if user asks about TVL, volume, or which pool to pick. See [references/data
 | --- | --- |
 | Action | Remove liquidity |
 | Chain | Base (8453) |
+| Pair address | 0xa278be41d539f49bf52dbc919ae1572963cb55d9 |
+| Bin step | 10 |
+| LB app version | v20 |
 
 ### Steps
-1. Open SectorOne app → Your positions
-2. Select the WETH/USDC (or relevant) position
-3. Choose bins / percentage to withdraw
-4. Confirm in wallet
+1. Open remove deep link (pool pre-selected)
+2. Connect wallet → select position bins / amount to withdraw
+3. Confirm in wallet
+
+### Execute
+**Open SectorOne:** https://app.sectorone.xyz/liquidity/manual/:8453/remove/v20/0xa278be41d539f49bf52dbc919ae1572963cb55d9/10
 
 For programmatic remove calldata, use `dlmm-integration` (`read-position` → `build-remove-liquidity`).
 ```

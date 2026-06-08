@@ -56,11 +56,11 @@ Removing LP requires knowing **which bins** hold the user's position.
 
 | Surface | Capability |
 | --- | --- |
-| SectorOne app | User selects position and removes in UI |
-| Bankr driver skill | Plan + link to app only |
+| SectorOne app deep link | `…/liquidity/manual/:8453/remove/v20/{pair}/{binStep}` — see [deep-links.md](deep-links.md) |
+| Bankr driver skill | Generate remove link when pair + bin step known |
 | `dlmm-integration` + CLI | `read-position` → `build-remove-liquidity` with `--bin-ids` |
 
-Always escalate remove-LP calldata requests to **`dlmm-integration`**.
+Always escalate remove-LP **calldata** requests to **`dlmm-integration`**.
 
 ## DLMM vs Uniswap LP (user messaging)
 

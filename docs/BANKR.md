@@ -54,7 +54,7 @@ Legacy umbrella: `skills/sectorone-dlmm/` (Cursor + Base MCP all-in-one onboardi
 
 - **Swap deep links** pre-fill tokens via query params; **amount** is still entered in the app (Uniswap can pass `value=`).
 - **Add-LP deep links** pre-fill chain, pool, and bin step: `app.sectorone.xyz/liquidity/manual/:8453/add/v20/{pair}/{binStep}` — see [references/deep-links.md](../packages/plugins/sectorone-driver/references/deep-links.md).
-- **Remove LP** has no documented path deep link yet — app Positions UI or CLI.
+- **Remove LP deep link:** `app.sectorone.xyz/liquidity/manual/:8453/remove/v20/{pair}/{binStep}` — same segments as add, action `remove`.
 - Exact on-chain quotes still require **dlmmskills CLI** or a future quote API.
 
 ## Publishing to skills.bankr.bot

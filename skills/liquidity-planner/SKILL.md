@@ -1,11 +1,11 @@
 ---
 name: liquidity-planner
-description: This skill should be used when the user asks to "provide liquidity SectorOne", "add liquidity DLMM", "LP on Joe Base", "liquidity on SectorOne", "DLMM bins", "bin step", "concentrated liquidity SectorOne", "remove liquidity SectorOne", "withdraw LP SectorOne", or mentions liquidity pools, LP positions, bins, or being a liquidity provider on SectorOne / Joe / Liquidity Book on Base mainnet. Plans DLMM liquidity context and generates app.sectorone.xyz add-LP deep links. Does NOT require npm install. For unsigned add/remove calldata or Base MCP send_calls, use dlmm-integration instead.
+description: This skill should be used when the user asks to "provide liquidity SectorOne", "add liquidity DLMM", "LP on Joe Base", "liquidity on SectorOne", "DLMM bins", "bin step", "concentrated liquidity SectorOne", "remove liquidity SectorOne", "withdraw LP SectorOne", or mentions liquidity pools, LP positions, bins, or being a liquidity provider on SectorOne / Joe / Liquidity Book on Base mainnet. Plans DLMM liquidity context and generates app.sectorone.xyz add/remove LP deep links. Does NOT require npm install. For unsigned add/remove calldata or Base MCP send_calls, use dlmm-integration instead.
 allowed-tools: Read, Glob, Grep, Bash(curl:*), Bash(jq:*), WebFetch, WebSearch, AskUserQuestion
 license: MIT
 metadata:
   author: Sectoroneskills
-  version: "0.2.1"
+  version: "0.2.2"
   plugin: sectorone-driver
 ---
 
@@ -73,8 +73,12 @@ Offer narrow / medium / wide framing — exact bin IDs come from the app or CLI.
 
 ### Step 5 — Add vs remove
 
-- **Add:** app flow — pair → pool (bin step) → range → deposit → confirm
-- **Remove:** app positions UI; calldata path → `dlmm-integration` + `read-position` / `build-remove-liquidity`
+- **Add:** `…/liquidity/manual/:8453/add/v20/{pair}/{binStep}`
+- **Remove:** `…/liquidity/manual/:8453/remove/v20/{pair}/{binStep}`
+
+Example remove: https://app.sectorone.xyz/liquidity/manual/:8453/remove/v20/0xa278be41d539f49bf52dbc919ae1572963cb55d9/10
+
+Calldata path → `dlmm-integration` + `read-position` / `build-remove-liquidity`
 
 ### Step 6 — Optional pool hints
 

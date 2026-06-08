@@ -61,11 +61,25 @@ https://app.sectorone.xyz/liquidity/manual/:8453/add/v20/{pair}/{binStep}
 | `v2` | `v20` (claimable fees) or `v21` (autocompounding) | Most Joe 2.0 pools |
 | `v22` | Confirm in app / pool page | v2.2 factory pools |
 
-When unsure, use **`v20`** (matches common Base add-LP links).
+When unsure, use **`v20`** (matches common Base liquidity links).
 
-### Remove liquidity
+## Remove liquidity (manual DLMM)
 
-No documented path deep link in public docs. Direct users to the app **Positions** view, or escalate to `dlmm-integration` + CLI.
+**Template:**
+
+```text
+https://app.sectorone.xyz/liquidity/manual/:{chainId}/remove/{lbAppVersion}/{lbPairAddress}/{binStep}
+```
+
+**Example (Base, bin step 10):**
+
+```text
+https://app.sectorone.xyz/liquidity/manual/:8453/remove/v20/0xa278be41d539f49bf52dbc919ae1572963cb55d9/10
+```
+
+Same path segments as **add** — only the action changes from `add` to `remove`. User still selects bins / percentage in the app after opening the link.
+
+For unsigned remove calldata / Base MCP, escalate to **`dlmm-integration`** (`read-position` → `build-remove-liquidity`).
 
 ## Swap
 
@@ -106,7 +120,9 @@ https://app.sectorone.xyz/swap?outputCurrency=0x833589fCD6eDb6E08f4c7C32D4f71b54
 Always show the **full HTTPS URL** prominently (Bankr may not open browsers):
 
 ```markdown
-**Open in SectorOne:** https://app.sectorone.xyz/liquidity/manual/:8453/add/v20/0x…/10
+**Open in SectorOne (add):** https://app.sectorone.xyz/liquidity/manual/:8453/add/v20/0x…/10
+
+**Open in SectorOne (remove):** https://app.sectorone.xyz/liquidity/manual/:8453/remove/v20/0x…/10
 ```
 
 Validate addresses before interpolating. Lowercase addresses in URLs are usually fine.
