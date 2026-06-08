@@ -35,9 +35,10 @@ For unknown symbols: WebSearch → verify address with `eth_getCode` → warn if
 
 ## App entry
 
-**https://linktr.ee/SectorOneDEX** — official SectorOne links.
+**Primary:** https://app.sectorone.xyz  
+**Linktree (fallback):** https://linktr.ee/SectorOneDEX
 
-> **No stable deep-link URL** (unlike `app.uniswap.org/swap?...`). Present swap/LP details in a summary table; user enters values manually in the app.
+Deep links: [deep-links.md](deep-links.md) — swap query params + liquidity manual path URLs.
 
 ## Docs API
 

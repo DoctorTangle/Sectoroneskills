@@ -1,11 +1,11 @@
 ---
 name: liquidity-planner
-description: This skill should be used when the user asks to "provide liquidity SectorOne", "add liquidity DLMM", "LP on Joe Base", "liquidity on SectorOne", "DLMM bins", "bin step", "concentrated liquidity SectorOne", "remove liquidity SectorOne", "withdraw LP SectorOne", or mentions liquidity pools, LP positions, bins, or being a liquidity provider on SectorOne / Joe / Liquidity Book on Base mainnet. Plans DLMM liquidity context and directs the user to the SectorOne app. Does NOT require npm install. For unsigned add/remove calldata or Base MCP send_calls, use dlmm-integration instead.
+description: This skill should be used when the user asks to "provide liquidity SectorOne", "add liquidity DLMM", "LP on Joe Base", "liquidity on SectorOne", "DLMM bins", "bin step", "concentrated liquidity SectorOne", "remove liquidity SectorOne", "withdraw LP SectorOne", or mentions liquidity pools, LP positions, bins, or being a liquidity provider on SectorOne / Joe / Liquidity Book on Base mainnet. Plans DLMM liquidity context and generates app.sectorone.xyz add-LP deep links. Does NOT require npm install. For unsigned add/remove calldata or Base MCP send_calls, use dlmm-integration instead.
 allowed-tools: Read, Glob, Grep, Bash(curl:*), Bash(jq:*), WebFetch, WebSearch, AskUserQuestion
 license: MIT
 metadata:
   author: Sectoroneskills
-  version: "0.2.0"
+  version: "0.2.1"
   plugin: sectorone-driver
 ---
 
@@ -24,9 +24,11 @@ SectorOne LP is **bin-based** (DLMM), not Uniswap tick-based. This skill:
 1. Gathers pair, amounts, and user goals
 2. Explains **bin step**, **bin range**, and **LB version** (v2 default)
 3. Queries SectorOne docs for protocol specifics
-4. Presents a structured plan + app link — user executes in UI
+4. Presents a structured plan + **add-LP deep link** — user executes in UI
 
-**No private keys. No pre-filled LP deep links** (unlike Uniswap `positions/create?...`).
+**No private keys.**
+
+Generate URLs per [references/deep-links.md](../../references/deep-links.md). Requires **LB pair address** + **bin step** (see below).
 
 ## Workflow
 
@@ -153,11 +155,37 @@ User flow in app:
 
 For remove requests, always mention: removing requires **bin IDs** from the position — visible in app or via CLI.
 
-### Step 6 — Optional pool hints
+### Step 6 — Resolve pair address + bin step (for deep link)
+
+Required for add-LP deep links. See [references/deep-links.md](../../references/deep-links.md).
+
+| Source | How |
+| --- | --- |
+| User pasted app URL | Parse `/liquidity/manual/:8453/add/v20/{pair}/{binStep}` |
+| **dlmmskills CLI** (best) | `list-pairs --token-in … --token-out … --lb-version v2 --json` |
+| DexScreener | `pairAddress` hint — confirm pool is SectorOne |
+
+**Default app path segment on Base:** `v20` (Joe 2.0 claimable-fee pools). Use `v21` only if user targets autocompounding fee pools.
+
+**Build add-LP link:**
+
+```text
+https://app.sectorone.xyz/liquidity/manual/:8453/add/v20/{lbPairAddress}/{binStep}
+```
+
+**Example:**
+
+```text
+https://app.sectorone.xyz/liquidity/manual/:8453/add/v20/0xa278be41d539f49bf52dbc919ae1572963cb55d9/10
+```
+
+If pair/bin step unknown, ask the user which pool they use in the app — do **not** guess pair addresses.
+
+### Step 7 — Optional pool hints
 
 Only if user asks about TVL, volume, or which pool to pick. See [references/data-providers.md](../../references/data-providers.md). Prefer directing user to compare pools **in the SectorOne app** over third-party data.
 
-### Step 7 — Present LP plan
+### Step 8 — Present LP plan
 
 **Add liquidity template:**
 
@@ -170,17 +198,16 @@ Only if user asks about TVL, volume, or which pool to pick. See [references/data
 | Pair | WETH / USDC |
 | Chain | Base (8453) |
 | LB version | v2 (Joe 2.0) — confirm in app |
-| Bin step | Select pool with deepest liquidity in app |
-| Range | Medium width around current price |
-| Deposit | 0.5 WETH (+ matching USDC per app) |
+| Bin step | 10 |
+| Deep link | https://app.sectorone.xyz/liquidity/manual/:8453/add/v20/0xa278be41d539f49bf52dbc919ae1572963cb55d9/10 |
 
 ### Considerations
 - **Impermanent loss:** price leaving your bins → position may become one-sided
 - **Bin management:** narrower ranges earn more when in range but need monitoring
-- **No LP deep link:** enter pair, bin step, and range manually in the app
+- Set bin range and deposit amounts in the app after opening the link
 
 ### Execute
-**Open SectorOne:** https://linktr.ee/SectorOneDEX
+**Open SectorOne:** https://app.sectorone.xyz/liquidity/manual/:8453/add/v20/0xa278be41d539f49bf52dbc919ae1572963cb55d9/10
 
 ### Need unsigned calldata?
 `npx skills add DoctorTangle/Sectoroneskills --skill dlmm-integration` + clone https://github.com/DoctorTangle/dlmmskills
@@ -224,4 +251,5 @@ Depending on active bin vs selected range, deposits may require one or both toke
 - [references/chains.md](../../references/chains.md)
 - [references/dlmm-bins.md](../../references/dlmm-bins.md)
 - [references/data-providers.md](../../references/data-providers.md)
+- [references/deep-links.md](../../references/deep-links.md)
 - [docs/BANKR.md](../../../../docs/BANKR.md)

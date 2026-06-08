@@ -63,7 +63,7 @@ Always escalate remove-LP calldata requests to **`dlmm-integration`**.
 | Tick range | Bin range |
 | Fee tier (0.05%, 0.3%, …) | Bin step + pool version |
 | Concentrated around price | Liquidity per bin; active bin moves on swaps |
-| Deep link to pre-filled range | **No documented deep link** — use app |
+| Deep link to pre-filled range | `app.sectorone.xyz/liquidity/manual/:8453/add/v20/{pair}/{binStep}` — see [deep-links.md](deep-links.md) |
 
 ## Impermanent loss / range risk
 

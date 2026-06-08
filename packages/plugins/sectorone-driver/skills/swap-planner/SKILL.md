@@ -1,11 +1,11 @@
 ---
 name: swap-planner
-description: This skill should be used when the user asks to "swap on SectorOne", "trade on Joe DLMM", "swap on LB Base", "exchange tokens SectorOne", "buy on SectorOne", "sell on SectorOne", "SectorOne quote", "trade USDC for WETH on Base DLMM", "Joe swap Base", or mentions swapping, trading, buying, or selling on SectorOne / Joe / Liquidity Book on Base mainnet. Plans the trade, verifies tokens on-chain, uses SectorOne docs for protocol context, and directs the user to the SectorOne app. Does NOT require npm install or the SectorOne SDK. For exact quotes, unsigned calldata, or Base MCP send_calls, use dlmm-integration instead.
+description: This skill should be used when the user asks to "swap on SectorOne", "trade on Joe DLMM", "swap on LB Base", "exchange tokens SectorOne", "buy on SectorOne", "sell on SectorOne", "SectorOne quote", "trade USDC for WETH on Base DLMM", "Joe swap Base", or mentions swapping, trading, buying, or selling on SectorOne / Joe / Liquidity Book on Base mainnet. Plans the trade, verifies tokens on-chain, generates app.sectorone.xyz swap deep links, and uses SectorOne docs for protocol context. Does NOT require npm install or the SectorOne SDK. For exact quotes, unsigned calldata, or Base MCP send_calls, use dlmm-integration instead.
 allowed-tools: Read, Glob, Grep, Bash(curl:*), Bash(jq:*), WebFetch, WebSearch, AskUserQuestion
 license: MIT
 metadata:
   author: Sectoroneskills
-  version: "0.2.0"
+  version: "0.2.1"
   plugin: sectorone-driver
 ---
 
@@ -23,11 +23,11 @@ Plan SectorOne DLMM swaps on **Base mainnet only** (`chainId` `8453`). For **Ban
 2. Resolve and verify token contracts on-chain
 3. Add protocol context via SectorOne docs API
 4. Optionally fetch rough market hints (only if user asks price/liquidity)
-5. Present a structured plan + **SectorOne app link** (user executes manually)
+5. Present a structured plan + **deep link** to [app.sectorone.xyz](https://app.sectorone.xyz)
 
-**No private keys. No local signing. No invented deep-link URL parameters.**
+**No private keys. No local signing.**
 
-SectorOne does not publish Uniswap-style swap URLs (`app.uniswap.org/swap?...`). Always show **https://linktr.ee/SectorOneDEX** and a clear summary table.
+Generate swap URLs per [references/deep-links.md](../../references/deep-links.md). Amount is entered by the user in the app after opening the link.
 
 ## Workflow
 
@@ -149,7 +149,25 @@ If no reliable data: say so honestly and point to the app.
 
 Exact quotes require **`dlmm-integration`** + CLI.
 
-### Step 7 — Present swap plan
+### Step 7 — Generate swap deep link
+
+See [references/deep-links.md](../../references/deep-links.md).
+
+```text
+https://app.sectorone.xyz/swap?inputCurrency={tokenIn}&outputCurrency={tokenOut}
+```
+
+- Use **checksum or lowercase** ERC-20 addresses
+- **ETH** → use WETH `0x4200000000000000000000000000000000000006`
+- Amount is **not** in the URL — user enters it in the app
+
+**Example (USDC → WETH, Base):**
+
+```text
+https://app.sectorone.xyz/swap?inputCurrency=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913&outputCurrency=0x4200000000000000000000000000000000000006
+```
+
+### Step 8 — Present swap plan
 
 Use this template:
 
@@ -167,11 +185,10 @@ Use this template:
 
 ### Notes
 - DLMM swaps consume liquidity from **price bins**; slippage depends on active bin depth.
-- SectorOne has no pre-filled swap URL — enter tokens and amount manually in the app.
-- Review slippage settings in the app before confirming.
+- Enter the swap amount in the app after opening the link.
 
 ### Execute
-**Open SectorOne:** https://linktr.ee/SectorOneDEX
+**Open SectorOne:** https://app.sectorone.xyz/swap?inputCurrency=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913&outputCurrency=0x4200000000000000000000000000000000000006
 
 ### Need calldata / Base MCP instead?
 Install `npx skills add DoctorTangle/Sectoroneskills --skill dlmm-integration` and clone https://github.com/DoctorTangle/dlmmskills
@@ -198,4 +215,5 @@ This skill is **Base-only**. Do not imply Ethereum mainnet or other chains.
 - [references/chains.md](../../references/chains.md) — RPC, routers, common tokens
 - [references/data-providers.md](../../references/data-providers.md) — docs API, optional DexScreener
 - [references/dlmm-bins.md](../../references/dlmm-bins.md) — bin / active bin concepts
+- [references/deep-links.md](../../references/deep-links.md) — swap + add-LP URL templates
 - [docs/BANKR.md](../../../../docs/BANKR.md) — Bankr compatibility overview

@@ -5,7 +5,7 @@ allowed-tools: Read, Glob, Grep, Bash(curl:*), Bash(jq:*), WebFetch, WebSearch, 
 license: MIT
 metadata:
   author: Sectoroneskills
-  version: "0.2.0"
+  version: "0.2.1"
   plugin: sectorone-driver
 ---
 
@@ -23,11 +23,9 @@ Plan SectorOne DLMM swaps on **Base mainnet only** (`chainId` `8453`). For **Ban
 2. Resolve and verify token contracts on-chain
 3. Add protocol context via SectorOne docs API
 4. Optionally fetch rough market hints (only if user asks price/liquidity)
-5. Present a structured plan + **SectorOne app link** (user executes manually)
+5. Present plan + **swap deep link** ([deep-links.md](references/deep-links.md))
 
-**No private keys. No local signing. No invented deep-link URL parameters.**
-
-SectorOne does not publish Uniswap-style swap URLs. Always show **https://linktr.ee/SectorOneDEX** and a clear summary table.
+SectorOne does not pre-fill **amount** in swap URLs — user enters it in the app.
 
 ## Workflow
 
@@ -111,7 +109,15 @@ Run **only if the user asks**. See [references/data-providers.md](references/dat
 
 Exact quotes → **`dlmm-integration`** + CLI.
 
-### Step 7 — Present swap plan
+### Step 7 — Swap deep link
+
+```text
+https://app.sectorone.xyz/swap?inputCurrency={tokenIn}&outputCurrency={tokenOut}
+```
+
+Example USDC → WETH: see [references/deep-links.md](references/deep-links.md).
+
+### Step 8 — Present swap plan
 
 ```markdown
 ## SectorOne Swap Plan (Base)
@@ -128,7 +134,7 @@ Exact quotes → **`dlmm-integration`** + CLI.
 - Enter tokens and amount manually in the app (no pre-filled swap URL).
 
 ### Execute
-**Open SectorOne:** https://linktr.ee/SectorOneDEX
+**Open SectorOne:** https://app.sectorone.xyz/swap?inputCurrency=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913&outputCurrency=0x4200000000000000000000000000000000000006
 
 ### Need calldata?
 `npx skills add DoctorTangle/Sectoroneskills --skill dlmm-integration` + https://github.com/DoctorTangle/dlmmskills
@@ -139,4 +145,5 @@ Exact quotes → **`dlmm-integration`** + CLI.
 - [references/chains.md](references/chains.md)
 - [references/data-providers.md](references/data-providers.md)
 - [references/dlmm-bins.md](references/dlmm-bins.md)
+- [references/deep-links.md](references/deep-links.md)
 - [docs/BANKR.md](../../docs/BANKR.md)

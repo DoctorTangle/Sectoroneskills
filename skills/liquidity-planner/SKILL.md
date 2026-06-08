@@ -5,7 +5,7 @@ allowed-tools: Read, Glob, Grep, Bash(curl:*), Bash(jq:*), WebFetch, WebSearch, 
 license: MIT
 metadata:
   author: Sectoroneskills
-  version: "0.2.0"
+  version: "0.2.1"
   plugin: sectorone-driver
 ---
 
@@ -24,9 +24,15 @@ SectorOne LP is **bin-based** (DLMM), not Uniswap tick-based. This skill:
 1. Gathers pair, amounts, and user goals
 2. Explains **bin step**, **bin range**, and **LB version** (v2 default)
 3. Queries SectorOne docs for protocol specifics
-4. Presents a structured plan + app link — user executes in UI
+4. Presents plan + **add-LP deep link** ([deep-links.md](../swap-planner/references/deep-links.md))
 
-**No private keys. No pre-filled LP deep links.**
+Requires LB **pair address** + **bin step** — from user URL, `list-pairs` CLI, or confirmed DexScreener hint.
+
+```text
+https://app.sectorone.xyz/liquidity/manual/:8453/add/v20/{lbPairAddress}/{binStep}
+```
+
+Example: https://app.sectorone.xyz/liquidity/manual/:8453/add/v20/0xa278be41d539f49bf52dbc919ae1572963cb55d9/10
 
 ## Workflow
 
@@ -93,7 +99,7 @@ Only if user asks. See [references/data-providers.md](../swap-planner/references
 - No LP deep link — configure manually in app
 
 ### Execute
-**Open SectorOne:** https://linktr.ee/SectorOneDEX
+**Open SectorOne:** https://app.sectorone.xyz/liquidity/manual/:8453/add/v20/{pair}/{binStep}
 ```
 
 ## Additional resources
@@ -101,4 +107,5 @@ Only if user asks. See [references/data-providers.md](../swap-planner/references
 - [references/chains.md](../swap-planner/references/chains.md)
 - [references/dlmm-bins.md](../swap-planner/references/dlmm-bins.md)
 - [references/data-providers.md](../swap-planner/references/data-providers.md)
+- [references/deep-links.md](../swap-planner/references/deep-links.md)
 - [docs/BANKR.md](../../docs/BANKR.md)

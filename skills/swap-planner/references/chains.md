@@ -35,9 +35,10 @@ For unknown symbols: WebSearch → verify with `eth_getCode` → warn if web-dis
 
 ## App entry
 
-**https://linktr.ee/SectorOneDEX**
+**Primary:** https://app.sectorone.xyz  
+**Linktree (fallback):** https://linktr.ee/SectorOneDEX
 
-> No stable Uniswap-style deep-link URL. Present a summary table; user enters values in the app.
+Deep links: [deep-links.md](deep-links.md)
 
 ## Docs API
 

@@ -1,7 +1,7 @@
 {
   "name": "sectorone-driver",
-  "version": "0.2.0",
-  "description": "Plan SectorOne DLMM swaps and liquidity on Base — verify tokens, query docs, explain DLMM bins, open the SectorOne app. No SDK install required.",
+  "version": "0.2.1",
+  "description": "Plan SectorOne DLMM swaps and liquidity on Base — verify tokens, generate app.sectorone.xyz deep links, explain DLMM bins. No SDK install required.",
   "author": {
     "name": "DoctorTangle",
     "email": "DoctorTangle@users.noreply.github.com"

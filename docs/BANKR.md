@@ -52,11 +52,10 @@ Legacy umbrella: `skills/sectorone-dlmm/` (Cursor + Base MCP all-in-one onboardi
 
 ## Limitations vs Uniswap driver
 
-- SectorOne does **not** publish stable swap/LP deep-link URLs like `app.uniswap.org/swap?...`.
-- Driver skills open **https://linktr.ee/SectorOneDEX** with a structured summary table (user enters values in app).
-- Protocol context via **docs.sectorone.xyz?ask=**; DexScreener is optional hint-only when user asks price/liquidity.
-- Reference docs: `packages/plugins/sectorone-driver/references/` (`chains.md`, `dlmm-bins.md`, `data-providers.md`).
-- For parity with Uniswap Trading API, a hosted **SectorOne quote/calldata API** would be the long-term fix.
+- **Swap deep links** pre-fill tokens via query params; **amount** is still entered in the app (Uniswap can pass `value=`).
+- **Add-LP deep links** pre-fill chain, pool, and bin step: `app.sectorone.xyz/liquidity/manual/:8453/add/v20/{pair}/{binStep}` — see [references/deep-links.md](../packages/plugins/sectorone-driver/references/deep-links.md).
+- **Remove LP** has no documented path deep link yet — app Positions UI or CLI.
+- Exact on-chain quotes still require **dlmmskills CLI** or a future quote API.
 
 ## Publishing to skills.bankr.bot
 
