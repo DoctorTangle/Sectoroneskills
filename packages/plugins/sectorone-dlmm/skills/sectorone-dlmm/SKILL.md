@@ -1,6 +1,17 @@
 ---
 name: sectorone-dlmm
-description: Read SectorOne DLMM pools on Base and build unsigned swap/liquidity calldata for Base MCP send_calls. Use for quote, add/remove LP, rebalance (SPOT/CURVE/BID_ASK, bin-count), discover-lp-bins, create pool. Triggers: "rebalance my SectorOne LP", "change to CURVE bins", "withdraw and reopen". Base 8453 only. Requires shell.
+description: >-
+  Read SectorOne DLMM pools on Base and build unsigned swap/liquidity calldata
+  for Base MCP send_calls. Use for quote, add/remove LP, rebalance
+  (SPOT/CURVE/BID_ASK, bin-count), discover-lp-bins, create pool. Triggers
+  include "rebalance my SectorOne LP", "change to CURVE bins", "withdraw and
+  reopen". Base 8453 only. Requires shell.
+allowed-tools: Read, Glob, Grep, Bash(*), WebFetch
+license: MIT
+metadata:
+  author: Sectoroneskills
+  version: "0.2.0"
+  plugin: sectorone-dlmm
 ---
 
 # SectorOne DLMM Skill
