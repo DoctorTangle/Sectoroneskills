@@ -1,0 +1,13 @@
+{
+  "name": "sectorone-dlmm",
+  "version": "0.2.0",
+  "description": "SectorOne DLMM on Base — full agent playbook (Base MCP send_calls, rebalance, discover-lp-bins). Requires dlmmskills CLI.",
+  "author": {
+    "name": "DoctorTangle",
+    "email": "DoctorTangle@users.noreply.github.com"
+  },
+  "homepage": "https://github.com/DoctorTangle/Sectoroneskills",
+  "keywords": ["sectorone", "dlmm", "base", "base-mcp", "rebalance", "liquidity"],
+  "license": "MIT",
+  "skills": ["./skills/sectorone-dlmm"]
+}

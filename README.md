@@ -64,10 +64,14 @@ See [docs/BANKR.md](docs/BANKR.md) for the Uniswap-style driver vs trading split
 ```text
 packages/plugins/
   sectorone-driver/     # Bankr-safe planners
-  sectorone-trading/    # CLI + Base MCP (check-cli.sh preflight)
+  sectorone-trading/    # dlmm-integration (CLI + Base MCP)
+  sectorone-bankr-execute/
+  sectorone-dlmm/       # Full umbrella skill (discoverable via npx skills)
 ```
 
-Legacy layouts: `skills/base-mcp/` (deprecated), `skills/sectorone-dlmm/` (canonical umbrella).
+`skills/sectorone-dlmm/` is the **canonical source**; sync to `packages/plugins/sectorone-dlmm/skills/` when editing (required for `npx skills add --skill sectorone-dlmm`).
+
+Legacy: `skills/base-mcp/` (deprecated).
 
 Driver reference docs (`chains`, `dlmm-bins`, `data-providers`): `packages/plugins/sectorone-driver/references/`
 
