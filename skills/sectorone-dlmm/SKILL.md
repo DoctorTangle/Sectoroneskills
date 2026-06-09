@@ -1,6 +1,6 @@
 ---
 name: sectorone-dlmm
-description: Read SectorOne (Liquidity Book / DLMM) pools on Base and build unsigned swap and liquidity calldata for Base MCP send_calls. Use for SectorOne / Joe 2.0 LB on Base — discover pools, deploy new pairs (build-create-pool), quote swaps, add or remove liquidity, inspect LP per bin, or rebalance positions. Base mainnet only (chainId 8453). Requires shell access.
+description: Read SectorOne DLMM pools on Base and build unsigned swap/liquidity calldata for Base MCP send_calls. Use for quote, add/remove LP, rebalance (SPOT/CURVE/BID_ASK, bin-count), discover-lp-bins, create pool. Triggers: "rebalance my SectorOne LP", "change to CURVE bins", "withdraw and reopen". Base 8453 only. Requires shell.
 ---
 
 # SectorOne DLMM Skill

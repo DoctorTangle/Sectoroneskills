@@ -50,12 +50,15 @@ npm install    # needs git; clones _sectorone-ref at pinned commit
 | `list-pairs` | Discover pools |
 | `quote` | Swap quote |
 | `build-swap` | Swap + approval calldata |
-| `build-add-liquidity` | Add LP calldata |
-| `build-remove-liquidity` | Remove LP (`--remove-all`, `--fraction`, or `--amounts`) |
+| `build-add-liquidity` | Add LP (`--bin-count`, SPOT/CURVE/BID_ASK) |
+| `build-remove-liquidity` | Remove LP (`--batch-size 10` for many bins) |
+| `build-rebalance-liquidity` | Batched remove + add |
+| `discover-lp-bins` | Find wallet LP bins |
+| `check-lp-approval` | ERC-1155 pair → router approval |
 | `read-pool` / `read-position` | Reads |
 | `normalize-calls` | Strict by default |
 
-Full playbook: [skills/sectorone-dlmm/plugin.md](../../../../skills/sectorone-dlmm/plugin.md)
+Full playbook: [skills/sectorone-dlmm/plugin.md](../../../../skills/sectorone-dlmm/plugin.md) · Rebalance: [rebalance-playbook.md](../../../../skills/sectorone-dlmm/references/rebalance-playbook.md)
 
 ## Example — swap
 

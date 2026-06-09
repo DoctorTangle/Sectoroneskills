@@ -27,7 +27,19 @@ Preflight: `bash packages/plugins/sectorone-trading/scripts/check-cli.sh`
 ## Full playbook
 
 - [../sectorone-dlmm/plugin.md](../sectorone-dlmm/plugin.md)
+- [../sectorone-dlmm/references/rebalance-playbook.md](../sectorone-dlmm/references/rebalance-playbook.md)
 - [../sectorone-dlmm/references/safety.md](../sectorone-dlmm/references/safety.md)
+
+## New CLI commands (rebalance)
+
+| Command | Purpose |
+| --- | --- |
+| `discover-lp-bins` | Find wallet LP bins (no guessing) |
+| `check-lp-approval` | ERC-1155 router approval on pair |
+| `build-rebalance-liquidity` | Batched remove + add in one JSON |
+| `wallet-balances` | ETH / WETH / USDC (+ optional LP count) |
+
+Remove many bins: `--batch-size 10`. Add custom width: `--bin-count` with SPOT/CURVE/BID_ASK.
 
 ## Base MCP
 

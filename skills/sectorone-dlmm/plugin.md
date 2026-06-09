@@ -242,13 +242,46 @@ npm run sectorone -- build-add-liquidity \
   --json
 ```
 
-MVP distribution: `SPOT`. Approvals for ERC-20 legs precede the router call.
+MVP distributions: `SPOT`, `CURVE`, `BID_ASK`. Use **`--bin-count <n>`** for custom width (e.g. 41 or 50 bins). Without it, the SDK default is **11 bins** (−5…+5 around active).
+
+```bash
+npm run sectorone -- build-add-liquidity \
+  --wallet "$BASE_MCP_WALLET" \
+  --token-x 0x4200000000000000000000000000000000000006 \
+  --token-y 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913 \
+  --token-x-decimals 18 \
+  --token-y-decimals 6 \
+  --amount-x 0.000254 \
+  --amount-y 1 \
+  --bin-step 10 \
+  --distribution BID_ASK \
+  --bin-count 41 \
+  --json
+```
+
+JSON `summary` includes `binCount`, `binRange`, `needsWethWrap`, `approvalCalls`, `liquidityCalls`. If `needsWethWrap` is true, wrap ETH to WETH **before** building/sending add calls.
+
+Approvals for ERC-20 legs precede the router call. After approvals confirm, **rebuild** add calldata and send only the liquidity call.
+
+Full rebalance flow: [references/rebalance-playbook.md](references/rebalance-playbook.md).
 
 ---
 
 ## Build Remove Liquidity
 
-Close or reduce LP in specific bins. Use `read-position` first to discover bin IDs and sizes.
+Close or reduce LP in specific bins.
+
+**Discover bins first** (do not guess):
+
+```bash
+npm run sectorone -- discover-lp-bins \
+  --wallet "$BASE_MCP_WALLET" \
+  --pair 0xLbPairAddress \
+  --scan-bins 60 \
+  --json
+```
+
+`read-position` requires `--bin-ids` — use output from `discover-lp-bins`.
 
 **How much to remove** — specify exactly one of:
 
@@ -268,14 +301,24 @@ npm run sectorone -- build-remove-liquidity \
   --bin-step 25 \
   --bin-ids 8376297,8376298,8376299 \
   --remove-all \
+  --batch-size 10 \
   --amount-slippage-bps 50 \
   --ttl 1200 \
   --json
 ```
 
-Optional: `--pair <lbPairAddress>` if you already know the pool address. Use `--native-x` / `--native-y` to receive **native ETH** when the WETH side is withdrawn (`removeLiquidityNATIVE` / `removeLiquidityAVAX`).
+For **>10–15 bins**, always use **`--batch-size 10`** (or similar) and submit each batch sequentially.
 
-No ERC-20 approvals are needed for remove — the router burns your bin LP shares in one call.
+**Approvals for remove:**
+
+| Type | Required? |
+| --- | --- |
+| ERC-20 | No |
+| ERC-1155 (`setApprovalForAll` on LB pair → router) | **Yes**, once per pair — CLI includes this call when `check-lp-approval` shows `approvalNeeded` |
+
+Optional: `--pair <lbPairAddress>`. **Do not use `--native-x` / `--native-y` with `--lb-version v2` on Base** — use WETH + standard `removeLiquidity`. Native remove/add on v2.0 router is unsupported (`NATIVE_LIQUIDITY_UNSUPPORTED`).
+
+One-shot rebalance (remove + add): `build-rebalance-liquidity` — see [references/rebalance-playbook.md](references/rebalance-playbook.md).
 
 ---
 
@@ -312,7 +355,12 @@ npm run sectorone -- read-position \
 - WETH on Base: `0x4200000000000000000000000000000000000006`.
 - Native flags require the corresponding token to be WETH; otherwise the command errors (`INVALID_NATIVE_SIDE`/`INVALID_NATIVE_IN`).
 - Native swaps set router `value` on the swap call; no ERC-20 approval for native input.
-- Add liquidity: `--native-x` or `--native-y` when depositing native ETH on the WETH side (`addLiquidityNATIVE`).
+- **Add/remove liquidity on Base v2 (`--lb-version v2`): do not use `--native-x` / `--native-y`.** Wrap ETH to WETH first. v2.0 router has no `addLiquidityNATIVE` on Base.
+- v22 pools may support native liquidity — confirm pool version before using native flags.
+
+## Local execution (optional, not MCP)
+
+Signed workflows with `PRIVATE_KEY` live in dlmmskills: `npm run position:execute`, `npm run position:rebalance`, `.env.example`. **Never** use private keys in skills, chat, or git. MCP/Bankr flows stay unsigned CLI + `send_calls` / Bankr submit.
 
 ## Approvals
 

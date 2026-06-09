@@ -205,6 +205,10 @@ npm run sectorone -- read-position \
 
 If bin IDs unknown → use **liquidity-planner** remove deep link instead.
 
+Prefer **`discover-lp-bins`** before remove when bin IDs are unknown. Remove may emit **ERC-1155** `setApprovalForAll` on the LB pair (CLI handles this). Use **`--batch-size 10`** for many bins.
+
+For **rebalance** (change distribution/bin count) → `build-rebalance-liquidity` or `dlmm-integration`; see SectorOne `rebalance-playbook.md`.
+
 ### C2 — Build remove calldata
 
 Require explicit user OK for full exit.

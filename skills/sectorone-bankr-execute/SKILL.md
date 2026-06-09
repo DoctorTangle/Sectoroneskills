@@ -113,6 +113,10 @@ If submit used v2.0 router but pool is v22 → **rebuild with `--lb-version v22`
 
 If bin IDs unknown → `liquidity-planner` remove deep link.
 
+For **rebalance** (change SPOT/CURVE/BID_ASK or bin count) → use `dlmm-integration` / `build-rebalance-liquidity`, or Bankr submit with batched remove + add. See [references/withdraw-troubleshooting.md](references/withdraw-troubleshooting.md) and SectorOne `rebalance-playbook.md`.
+
+Remove requires **ERC-1155** `setApprovalForAll` on the LB pair (CLI emits when needed) — not only ERC-20.
+
 ---
 
 ## Escalation

@@ -16,8 +16,9 @@ Never use `walletClient.writeContract`, `cast send`, browser wallet signers, or 
 ## Approvals
 
 - **Swap:** ERC-20 `tokenIn` approval to the LB router when allowance is insufficient (exact amount by default).
-- **Add liquidity:** Approvals for each ERC-20 leg before the router call.
-- **Native ETH:** No ERC-20 approval; router `value` carries the native deposit. `--native-in`/`--native-out`/`--native-x`/`--native-y` require the relevant token to be WETH (`0x4200...0006`) or the command errors.
+- **Add liquidity:** ERC-20 approvals for each leg before the router call. Use `--bin-count` for SPOT/CURVE/BID_ASK width (default 11 bins if omitted). Check `needsWethWrap` in summary — wrap ETH before add on Base v2.
+- **Remove liquidity:** No ERC-20 approvals. **ERC-1155:** `setApprovalForAll(router, true)` on the LB pair when not yet set — CLI emits this automatically. Batch large removes with `--batch-size 10`.
+- **Native ETH (liquidity):** **Do not use `--native-x`/`--native-y` with `--lb-version v2` on Base.** Wrap to WETH first. Swaps may still use `--native-in`/`--native-out` where supported.
 - **Infinite approval:** `--infinite-approval` (or `--infinite` for `check-approval`) grants an unlimited allowance and requires an explicit second confirmation `--confirm-infinite-approval`. Build summaries expose `approvalType: "infinite" | "exact"`.
 
 ## Slippage (basis points)
@@ -41,7 +42,20 @@ Default CLI slippage: **50 bps** (0.5%).
 - Converts legacy unsigned txs to the `send_calls` shape. It prints a per-call risk summary (target, selector, value, known/unknown) to stderr.
 - Strict mode is **on by default**: any call that is neither an ERC-20 `approve` nor targeted at a known SectorOne contract (v2/v22 router, Liquidity Helper) is rejected. Pass `--allow-unknown-targets` only to opt out for trusted input (not recommended).
 
-## Protocol Versions
+## Rebalance
+
+See [rebalance-playbook.md](rebalance-playbook.md) for the full MCP sequence (`discover-lp-bins` → batched remove → add with `--bin-count`).
+
+## Troubleshooting (agents)
+
+| Error | Fix |
+| --- | --- |
+| `NATIVE_LIQUIDITY_UNSUPPORTED` | No `--native-x` on v2 Base; wrap WETH |
+| `NO_LP_IN_BIN` | Run `discover-lp-bins` first |
+| Remove revert (many bins) | `--batch-size 10` |
+| `transfer amount exceeds allowance` | Rebuild calldata after wrap/approvals |
+
+PowerShell: use `;` not `&&` between shell commands.
 
 - **LB v2.0 (Joe 2.0)** (`--lb-version v2`) is the default on Base where most liquidity lives.
 - **LB v2.2** (`--lb-version v22`) for newer bin-step pools on the v2.2 factory.
