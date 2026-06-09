@@ -21,6 +21,26 @@ export BANKR_API_KEY="bk_…"
 bash scripts/check-cli.sh
 ```
 
+### Dry-run (no Bankr submit)
+
+Validate CLI `calls[]` JSON for all three flows — **no** `BANKR_API_KEY` required:
+
+```bash
+export BASE_RPC_URL="https://base-rpc.publicnode.com"
+export SECTORONE_CLI_ROOT="/path/to/dlmmskills"
+bash scripts/dry-run-bankr-flows.sh
+```
+
+Windows (PowerShell):
+
+```powershell
+$env:BASE_RPC_URL = "https://base-rpc.publicnode.com"
+$env:SECTORONE_CLI_ROOT = "C:\path\to\dlmmskills"
+.\scripts\dry-run-bankr-flows.ps1
+```
+
+Optional: `SECTORONE_DRY_RUN_LP_WALLET=0x…` (wallet with LP) for full **remove** calldata validation.
+
 CLI: `git clone https://github.com/DoctorTangle/dlmmskills.git && cd dlmmskills && npm install`
 
 ```bash
@@ -64,8 +84,31 @@ npm run sectorone -- build-add-liquidity \
 
 ## Flow C — LP withdraw
 
-1. Get **bin IDs** (user or `read-position`)  
-2. `build-remove-liquidity --wallet "$WALLET" --bin-ids … --remove-all --json`  
+**Read first:** [references/withdraw-troubleshooting.md](references/withdraw-troubleshooting.md) — most reverts are **wrong `--lb-version`** (v2 router on v2.2 pool).
+
+### C0 — Resolve LB version (mandatory)
+
+Do **not** default to `v2` for remove. Match the user’s **pair address** to a factory:
+
+```bash
+bash scripts/resolve-lb-version.sh \
+  --pair 0xPairFromApp \
+  --token-in 0xDEGEN… --token-out 0x4200000000000000000000000000000000000006 \
+  --token-in-decimals 18 --token-out-decimals 18
+# → prints v2 or v22 — use that for all steps below
+```
+
+After `build-remove-liquidity --json`, confirm `summary.router` is:
+
+- v2 → `0xd4f937581650A2d6e416Dd9EF5372C1672422843`
+- v22 → `0x87aC1EB5596D47f6fd7d0D17bEE233783dB5CfEC`
+
+If submit used v2.0 router but pool is v22 → **rebuild with `--lb-version v22`** and resubmit.
+
+### C1 — Bin IDs + bin step
+
+1. Get **bin IDs** (user or `read-position`) and **bin step** (app URL or `list-pairs`)
+2. `build-remove-liquidity --wallet "$WALLET" --lb-version … --bin-ids … --remove-all --json`
 3. Submit `calls[]`
 
 If bin IDs unknown → `liquidity-planner` remove deep link.

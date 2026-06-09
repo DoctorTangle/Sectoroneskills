@@ -30,6 +30,16 @@ export SECTORONE_CLI_ROOT=/path/to/dlmmskills   # optional
 bash ../../scripts/check-cli.sh
 ```
 
+### Dry-run (no Bankr submit)
+
+Validate CLI `calls[]` JSON for create / add / remove — **no** `BANKR_API_KEY`:
+
+```bash
+bash ../../scripts/dry-run-bankr-flows.sh
+```
+
+Windows: `../../scripts/dry-run-bankr-flows.ps1`. Optional `SECTORONE_DRY_RUN_LP_WALLET` for full remove calldata.
+
 Install CLI once:
 
 ```bash
@@ -159,6 +169,23 @@ Wait for each confirmation before the next.
 
 **When:** User wants to **withdraw** LP from specific bins using Bankr wallet.
 
+**Troubleshooting:** [references/withdraw-troubleshooting.md](../../references/withdraw-troubleshooting.md) — #1 revert cause is **v2 vs v22 router mismatch** (e.g. DEGEN/WETH bin step 100 on v2.2 factory submitted via v2.0 router).
+
+### C0 — Resolve LB version (mandatory — do before build)
+
+App URL `v20` is **not** enough. Resolve factory from **pair address**:
+
+```bash
+bash ../../scripts/resolve-lb-version.sh \
+  --pair 0xPairFromApp \
+  --token-in 0x… --token-out 0x4200000000000000000000000000000000000006 \
+  --token-in-decimals 18 --token-out-decimals 18
+```
+
+Use printed `v2` or `v22` for `list-pairs`, `read-position`, and `build-remove-liquidity`.
+
+Verify after build: `summary.router` must be v2 (`0xd4f9…2843`) or v22 (`0x87aC…CfEC`) — **never submit the wrong router.**
+
 ### C1 — Bin IDs required
 
 Removing requires **which bins** hold the user's LP. Sources:
@@ -192,9 +219,11 @@ npm run sectorone -- build-remove-liquidity \
   --bin-step 25 \
   --bin-ids 8388608,8388609 \
   --remove-all \
-  --lb-version v2 \
+  --lb-version v22 \
   --json
 ```
+
+Replace `v22` with the version from **C0** (often `v2`, but **v22** for newer pools — wrong version → on-chain revert).
 
 Or `--fraction 0.5` for partial remove.
 
