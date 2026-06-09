@@ -360,7 +360,19 @@ npm run sectorone -- read-position \
 
 ## Local execution (optional, not MCP)
 
-Signed workflows with `PRIVATE_KEY` live in dlmmskills: `npm run position:execute`, `npm run position:rebalance`, `.env.example`. **Never** use private keys in skills, chat, or git. MCP/Bankr flows stay unsigned CLI + `send_calls` / Bankr submit.
+Signed workflows with `PRIVATE_KEY` in dlmmskills:
+
+| Command | Use |
+| --- | --- |
+| `npm run position:execute` | Add LP |
+| `npm run position:withdraw` | Remove LP only (batched) |
+| `npm run position:rebalance` | Remove + add |
+
+See `.env.example`. **Never** use private keys in skills, chat, or git.
+
+**Agent setup:** install skills separately — `npx skills add DoctorTangle/Sectoroneskills --skill sectorone-dlmm`. Cloning dlmmskills alone does not install agent playbooks.
+
+MCP/Bankr unsigned withdraw: `build-remove-liquidity --batch-size 10 --json`.
 
 ## Approvals
 

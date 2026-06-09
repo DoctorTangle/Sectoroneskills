@@ -71,7 +71,15 @@ npm run sectorone -- build-add-liquidity \
 
 ## Local execution (optional)
 
-For `PRIVATE_KEY` workflows (not Base MCP): see dlmmskills README — `npm run position:rebalance`, `DRY_RUN=false` in `.env`. Never put keys in skills or commits.
+| npm script | Flow |
+| --- | --- |
+| `position:execute` | Add only |
+| `position:withdraw` | Remove only (`BIN_IDS` or auto `discover-lp-bins`) |
+| `position:rebalance` | Remove batches + add |
+
+For `PRIVATE_KEY` workflows (not Base MCP): see dlmmskills `.env.example` — `DRY_RUN=false`. Never put keys in skills or commits.
+
+**Unsigned withdraw (MCP/Bankr):** `build-remove-liquidity --remove-all --batch-size 10 --json` → `send_calls` or Bankr submit per batch.
 
 ## Windows
 

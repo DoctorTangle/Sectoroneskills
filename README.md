@@ -4,6 +4,8 @@ Agent skills for [SectorOne DLMM](https://sectorone.xyz) on **Base mainnet** —
 
 **CLI and SDK tooling** live in a separate repository: [DoctorTangle/dlmmskills](https://github.com/DoctorTangle/dlmmskills).
 
+> **Important:** Agents need **both** — install skills from this repo **and** clone/build dlmmskills for calldata commands. The CLI repo alone does not install agent playbooks.
+
 ## Install (Skills CLI)
 
 List discoverable skills:
